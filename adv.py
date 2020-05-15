@@ -30,6 +30,43 @@ player = Player(world.starting_room)
 traversal_path = []
 
 
+# Need to reverse incase we get stuck
+reverse_direction = {'n': 's','s': 'n','w': 'e', 'e': 'w'}
+
+# Go thru current room exits
+# travel to exit
+
+# If already travelled there, move back
+# If not visited, mark as visited, add to set, add new direction to visit
+# Add reverse steps to keep track of directions
+
+def explore(starting_room, visited=set()):
+
+    make_new_path = []
+
+    for direction in player.current_room.get_exits():
+        player.travel(direction)
+
+        # Room already visited, reverse direction and move back
+        if player.current_room.id in visited:
+            player.travel(reverse_direction[direction])
+            
+        else:
+            # Not been here before, add room, mark as visited
+            # Move direction
+            visited.add(player.current_room.id)
+            make_new_path.append(direction)
+            
+            make_new_path = make_new_path + explore(player.current_room.id, visited)
+            player.travel(reverse_direction[direction])
+            make_new_path.append(reverse_direction[direction])
+
+    return make_new_path
+
+# no longer empty arr, passes in id to call func
+traversal_path = explore(player.current_room.id)
+
+
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
@@ -60,3 +97,4 @@ while True:
         break
     else:
         print("I did not understand that command.")
+        
